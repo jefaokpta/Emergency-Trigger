@@ -7,7 +7,7 @@ declare _uniq char(50);
 declare _disp char(20);
 -- MANIPULACOES APENAS PRA TRANSFERENCIAS
     if new.channel != 'Console/dsp' then
-      if new.lastapp = 'Transferred Call' then
+      if new.lastapp = 'NoOp' then
         if new.dcontext = 'dialPeer' then           update relcalls set duration=new.duration,billsec=new.billsec,accountcode=new.accountcode,
             price=(select tarifadorVip(new.billsec,new.accountcode,new.company_id))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
