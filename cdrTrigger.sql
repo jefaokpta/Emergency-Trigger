@@ -24,6 +24,11 @@ declare _disp char(20);
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
                 and channel=new.channel;
         end if;
+      elseif substr(new.dcontext,1,6) = 'TRANSF' then
+        update relcalls set duration=(duration+new.duration),billsec=(billsec+new.billsec),
+            price=(select tarifadorVip((billsec+new.billsec),accountcode,substr(new.dcontext,8)))
+              where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
+                and channel=new.dstchannel;
         -- FIM MANIPULACOES DE TRANSFERENCIAS
       else
       -- ANALIZA APENAS CCUSTO 0800 CASO JA TENHA REGISTRO NA RELLCALLS
