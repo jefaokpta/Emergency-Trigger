@@ -1,3 +1,6 @@
+delimiter //
+
+
 BEGIN
 declare _numcalls int;
 declare _id int;
@@ -9,11 +12,11 @@ declare _disp char(20);
     if new.channel != 'Console/dsp' then
       if new.lastapp = 'NoOp' then
         if new.dcontext = 'dialPeer' then           update relcalls set duration=new.duration,billsec=new.billsec,accountcode=new.accountcode,
-            price=(select tarifadorVip(new.billsec,new.accountcode,new.company_id))
+            price=(select tarifadorVip(new.billsec,new.accountcode,substr(new.lastdata,1,3)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
                 and channel=new.dstchannel;
         elseif new.dcontext = 'dialRoute' then           update relcalls set duration=new.duration,billsec=new.billsec,
-            price=(select tarifadorVip(new.billsec,accountcode,company_id))
+            price=(select tarifadorVip(new.billsec,accountcode,substr(new.lastdata,1,3)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
                 and channel=new.channel;
         elseif substr(new.dcontext,1,3) = 'VIP' then           update relcalls set duration=new.duration,billsec=new.billsec,
@@ -54,3 +57,5 @@ declare _disp char(20);
       end if;
     end if;
  END
+ 
+ delimiter ;
