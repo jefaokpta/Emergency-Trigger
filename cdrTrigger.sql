@@ -10,7 +10,7 @@ declare _uniq char(50);
 declare _disp char(20);
 -- MANIPULACOES APENAS PRA TRANSFERENCIAS
     if new.channel != 'Console/dsp' then
-      if new.lastapp = 'NoOp' and new.accountcode >= 2 then
+      if new.lastapp = 'NoOp' and new.accountcode >= 2 and new.billsec > 0 then
         if new.dcontext = 'dialPeer' then           update relcalls set duration=(duration+new.duration),billsec=(billsec+new.billsec),accountcode=new.accountcode,
             price=(select tarifadorVip((billsec+new.billsec),new.accountcode,substr(new.lastdata,1,3)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
@@ -19,12 +19,8 @@ declare _disp char(20);
             price=(select tarifadorVip((billsec+new.billsec),accountcode,substr(new.lastdata,1,3)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
                 and channel=new.channel;
-        elseif substr(new.dcontext,1,3) = 'VIP' then           update relcalls set duration=(duration+new.duration),billsec=(billsec+new.billsec),
-            price=(select tarifadorVip((billsec+new.billsec),accountcode,company_id))
-              where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
-                and channel=new.channel;
         end if;
-      elseif substr(new.dcontext,1,6) = 'TRANSF' and new.accountcode >= 2 then
+      elseif substr(new.dcontext,1,6) = 'TRANSF' and new.accountcode >= 2 and new.billsec > 0 then
         update relcalls set duration=(duration+new.duration),billsec=(billsec+new.billsec),
             price=(select tarifadorVip((billsec+new.billsec),accountcode,substr(new.dcontext,8)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
