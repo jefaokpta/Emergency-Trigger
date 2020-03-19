@@ -14,17 +14,17 @@ declare _disp char(20);
         if new.dcontext = 'dialPeer' then           update relcalls set duration=(duration+new.duration),billsec=(billsec+new.billsec),accountcode=new.accountcode,
             price=(select tarifadorVip((billsec+new.billsec),new.accountcode,substr(new.lastdata,1,3)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
-                and channel=new.dstchannel;
+                and company_id = substr(new.lastdata,1,3) and channel=new.dstchannel limit 1;
         elseif new.dcontext = 'dialRoute' then           update relcalls set duration=(duration+new.duration),billsec=(billsec+new.billsec),
             price=(select tarifadorVip((billsec+new.billsec),accountcode,substr(new.lastdata,1,3)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
-                and channel=new.channel;
+                and company_id = substr(new.lastdata,1,3) and channel=new.channel limit 1;
         end if;
-      elseif substr(new.dcontext,1,6) = 'TRANSF' and new.accountcode >= 2 and new.billsec > 0 then
+      elseif substr(new.dcontext,1,6) = 'TRANSF' and new.accountcode >= 2 and new.billsec > 0 then -- TRANSFERIR PRA CONFERENCIAS
         update relcalls set duration=(duration+new.duration),billsec=(billsec+new.billsec),
             price=(select tarifadorVip((billsec+new.billsec),accountcode,substr(new.dcontext,8)))
               where calldate BETWEEN concat(substr(now(),1,10),' 00:00:00') and now()
-                and channel=new.dstchannel;
+                and company_id = substr(new.dcontext,8) and channel=new.dstchannel limit 1;
         -- FIM MANIPULACOES DE TRANSFERENCIAS
       else
       -- ANALIZA APENAS CCUSTO 0800 CASO JA TENHA REGISTRO NA RELLCALLS
