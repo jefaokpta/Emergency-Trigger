@@ -1,4 +1,5 @@
 delimiter //
+
 BEGIN     
 if new.channel != 'Console/dsp' then
   if substr(new.dcontext,1,6) = 'TRANSF' and new.accountcode >= 2 and new.billsec > 0 then
@@ -15,6 +16,7 @@ if new.channel != 'Console/dsp' then
   end if;
 end if;
 END
+
 delimiter ;
 
  update relcalls set duration=(duration+1),billsec=(billsec+1),
