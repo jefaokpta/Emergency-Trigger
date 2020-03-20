@@ -23,3 +23,8 @@ BEGIN     declare _numcalls int;
       end if;
     end if;
  END
+
+ update relcalls set duration=(duration+1),billsec=(billsec+1),
+            price=(select tarifadorVip((billsec+1),accountcode,100))
+              where calldate BETWEEN '2020-03-18 00:00:00' and now()
+                and company_id = 100 and channel='IAX2/Marte-13075'
